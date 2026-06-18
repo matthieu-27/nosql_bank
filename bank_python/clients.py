@@ -23,16 +23,36 @@ def create_client():
     cid = next_id("clients", "CLI")
     client = {"_id": cid, "firstName": first, "lastName": last, "email": email}
     _col().insert_one(client)
-    print("*** Client crée avec succès.")
+    print("*** Client crée avec succès. ***")
     _print_client(client)
 
-def edit_client():
+
+def search_client():
     pass
+
+
+def edit_client():
+    print("\n-- Modifier un client --")
+    cid = input("ID du client : ").strip()
+    client = _col().find_one({"_id": cid})
+    if not client:
+        print("Client introuvable.")
+        return
+    print("Laissez vide pour conserver la valeur actuelle.")
+    first = input(f"Prénom [{client['firstName']}] : ").strip() or client["firstName"]
+    last = input(f"Nom    [{client['lastName']}] : ").strip() or client["lastName"]
+    email = input(f"Email  [{client['email']}] : ").strip() or client["email"]
+    client = {"firstName": first, "lastName": last, "email": email}
+    _col().update_one({"_id": cid}, {"$set": client})
+    print("*** Client mis à jour avec succès. ***")
+    client["_id"] = cid
+    _print_client(client)
 
 def menu():
     options = {
         "1": ("Créer un client", create_client),
         "2": ("Éditer un client", edit_client),
+        "3": ("Rechercher un client", search_client),
         "0": ("Retour", None),
     }
     while True:
