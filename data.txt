@@ -1,0 +1,121 @@
+db.clients.drop();
+db.accounts.drop();
+db.transactions.drop();
+
+
+db.clients.insertMany([
+  {
+    _id: "CLI001",
+    firstName: "Lefèvre",
+    lastName: "Camille",
+    email: "camille.lefevre@example.fr"
+  },
+  {
+    _id: "CLI002",
+    firstName: "Bernard",
+    lastName: "Mathieu",
+    email: "mathieu.bernard@example.fr"
+  },
+  {
+    _id: "CLI003",
+    firstName: "Diop",
+    lastName: "Awa",
+    email: "awa.diop@example.sn"
+  },
+  {
+    _id: "CLI004",
+    firstName: "Ndiaye",
+    lastName: "Moussa",
+    email: "moussa.ndiaye@example.sn"
+  }
+]);
+
+
+db.accounts.insertMany([
+  {
+    _id: "CPT001",
+    accountIban: "FR76 3000 6000 0112 3456 7890 189",
+    balance: 12500.75,
+    clientId: "CLI001"
+  },
+  {
+    _id: "CPT002",
+    accountIban: "FR14 2004 1010 0505 0001 3M02 606",
+    balance: 3200.00,
+    clientId: "CLI001" // 2e compte du même client (épargne)
+  },
+  {
+    _id: "CPT003",
+    accountIban: "FR76 1027 8060 3700 0212 3456 789",
+    balance: 980.40,
+    clientId: "CLI002"
+  },
+  {
+    _id: "CPT004",
+    accountIban: "SN08 SN01 0152 0000 0254 0023 1546",
+    balance: 1250000,
+    clientId: "CLI003"
+  },
+  {
+    _id: "CPT005",
+    accountIban: "SN08 SN01 0078 0000 0398 1122 7741",
+    balance: 540000,
+    clientId: "CLI004"
+  }
+]);
+
+
+db.transactions.insertMany([
+  {
+    _id: "OPE001",
+    amount: 2000,
+    date: ISODate("2026-01-15T09:30:00Z"),
+    sourceAccountId: "CPT001",
+    type: "Deposit"
+  },
+  {
+    _id: "OPE002",
+    amount: 500,
+    date: ISODate("2026-02-10T14:05:00Z"),
+    sourceAccountId: "CPT001",
+    type: "Withdrawal"
+  },
+  {
+    _id: "OPE003",
+    amount: 800,
+    date: ISODate("2026-03-02T08:00:00Z"),
+    sourceAccountId: "CPT004",
+    type: "Deposit"
+  },
+  {
+    _id: "OPE004",
+    amount: 150000,
+    date: ISODate("2026-03-20T11:45:00Z"),
+    sourceAccountId: "CPT005",
+    type: "Withdrawal"
+  },
+  {
+    _id: "OPE005",
+    amount: 1000,
+    date: ISODate("2026-04-05T16:20:00Z"),
+    sourceAccountId: "CPT001",
+    receiverAccountId: "CPT004",
+    type: "Transfer"
+  },
+  {
+    _id: "OPE006",
+    amount: 250000,
+    date: ISODate("2026-05-11T10:00:00Z"),
+    sourceAccountId: "CPT004",
+    receiverAccountId: "CPT002",
+    type: "Transfer"
+  },
+  {
+    _id: "OPE007",
+    amount: 300,
+    date: ISODate("2026-05-22T17:15:00Z"),
+    sourceAccountId: "CPT002",
+    receiverAccountId: "CPT003",
+    type: "Transfer"
+  }
+]);
