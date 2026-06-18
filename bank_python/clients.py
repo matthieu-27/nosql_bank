@@ -74,13 +74,35 @@ def list_clients():
     for c in clients:
         print(f"{c['_id']:<8} {c.get('firstName',''):<15} {c.get('lastName',''):<15} {c.get('email','')}")
 
+def delete_client():
+    print("\n** Supprimer un client **")
+    cid = input("ID du client : ").strip()
+    client = _col().find_one({"_id": cid})
+    if not client:
+        print("Client introuvable.")
+        return
+    comptes = list(get_db()["accounts"].find({"clientId": cid}, {"_id": 1}))
+    if comptes:
+        ids = ", ".join(c["_id"] for c in comptes)
+        print(f"Attention : ce client possède des comptes ({ids}).")
+        confirm = input("Supprimer quand même ? (oui/non) : ").strip().lower()
+        if confirm != "oui":
+            print("Annulé.")
+            return
+    _col().delete_one({"_id": cid})
+    print("Client supprimé. Adieu")
+    client["_id"] = cid
+    _print_client(client)
+
+
 
 def menu():
     options = {
         "1": ("Créer un client", create_client),
         "2": ("Éditer un client", edit_client),
-        "3": ("Rechercher un client", search_client),
-        "4": ("Afficher les client", list_clients),
+        "3": ("Supprimer un client", delete_client),
+        "4": ("Rechercher un client", search_client),
+        "5": ("Afficher les client", list_clients),
         "0": ("Retour", None),
     }
     while True:
