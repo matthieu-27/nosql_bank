@@ -13,7 +13,7 @@ def _print_client(c):
 
 
 def create_client():
-    print("\n-- Créer un client --")
+    print("\n** Créer un client **")
     first = input("Prénom : ").strip()
     last = input("Nom    : ").strip()
     email = input("Email  : ").strip()
@@ -28,7 +28,7 @@ def create_client():
 
 
 def search_client():
-    print("\n-- Rechercher un client --")
+    print("\n** Rechercher un client **")
     terme = input("ID, prénom ou nom : ").strip()
     results = list(_col().find({
         "$or": [
@@ -46,7 +46,7 @@ def search_client():
 
 
 def edit_client():
-    print("\n-- Modifier un client --")
+    print("\n** Modifier un client **")
     cid = input("ID du client : ").strip()
     client = _col().find_one({"_id": cid})
     if not client:
@@ -62,11 +62,25 @@ def edit_client():
     client["_id"] = cid
     _print_client(client)
 
+
+def list_clients():
+    print("\n** Liste des clients **")
+    clients = list(_col().find().sort("_id", 1))
+    if not clients:
+        print("Aucun client enregistré.")
+        return
+    print(f"{'ID':<8} {'Prénom':<15} {'Nom':<15} Email")
+    print("-" * 60)
+    for c in clients:
+        print(f"{c['_id']:<8} {c.get('firstName',''):<15} {c.get('lastName',''):<15} {c.get('email','')}")
+
+
 def menu():
     options = {
         "1": ("Créer un client", create_client),
         "2": ("Éditer un client", edit_client),
         "3": ("Rechercher un client", search_client),
+        "4": ("Afficher les client", list_clients),
         "0": ("Retour", None),
     }
     while True:
