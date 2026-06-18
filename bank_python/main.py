@@ -1,5 +1,5 @@
 import sys
-
+import clients
 
 def main_menu():
     print("\n********************************")
@@ -25,7 +25,14 @@ def main():
         sys.exit(1)
 
     while True:
-        main_menu()
+        choice = main_menu()
+        if choice == "1":
+            clients.menu()
+        elif choice == "0":
+            print("Au revoir !")
+            break
+        else:
+            print("Choix invalide.")
 
 
 if __name__ == "__main__":
