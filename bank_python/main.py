@@ -3,12 +3,12 @@ import sys
 
 def main_menu():
     print("\n********************************")
-    print("|         PYTHON  BANK         |")
+    print("|    GESTION BANCAIRE - MENU   |")
     print("|******************************|")
-    print("|  1. Clients menu             |")
-    print("|  2. Accounts menu            |")
-    print("|  3. Transaction menu         |")
-    print("|  0. Exit                     |")
+    print("|  1. Gestion des clients      |")
+    print("|  2. Gestion des comptes      |")
+    print("|  3. Gestion des opérations   |")
+    print("|  0. Quitter                  |")
     print("********************************")
     return input("Votre choix : ").strip()
 
