@@ -28,7 +28,21 @@ def create_client():
 
 
 def search_client():
-    pass
+    print("\n-- Rechercher un client --")
+    terme = input("ID, prénom ou nom : ").strip()
+    results = list(_col().find({
+        "$or": [
+            {"_id": terme},
+            {"firstName": {"$regex": terme, "$options": "i"}},
+            {"lastName": {"$regex": terme, "$options": "i"}},
+        ]
+    }))
+    if not results:
+        print("Aucun client trouvé.")
+        return
+    for c in results:
+        print()
+        _print_client(c)
 
 
 def edit_client():
