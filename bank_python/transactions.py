@@ -44,7 +44,7 @@ def deposit():
     _col().insert_one(transaction)
     print("*** Dépôt effectué avec succès. ***")
     _print_transaction(transaction)
-    print(f"  New balance : {account['balance'] + amount:,.2f}")
+    print(f"  Nouveau solde : {account['balance'] + amount:,.2f}")
 
 
 def menu():
