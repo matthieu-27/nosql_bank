@@ -123,12 +123,32 @@ def transfer():
     print(f"  Nouveau solde (compte source) : {src['balance'] - amount:,.2f}")
 
 
+def history():
+    print("\n** Historique des transactions **")
+    account_id = input("ID du compte (vide = toutes) : ").strip()
+    if account_id:
+        if not get_db()["accounts"].find_one({"_id": account_id}):
+            print("Compte introuvable.")
+            return
+        query = {"$or": [{"sourceAccountId": account_id}, {"receiverAccountId": account_id}]}
+    else:
+        query = {}
+    transactions = list(_col().find(query).sort("date", 1))
+    if not transactions:
+        print("Aucune transaction trouvée.")
+        return
+    print(f"\n{'ID':<8} {'Type':<12} {'Amount':>12}  {'Date':<18} Source    Receiver")
+    print("-" * 75)
+    for t in transactions:
+        _print_transaction(t)
+
+
 def menu():
     options = {
         "1": ("Effectuer un dépôt", deposit),
         "2": ("Effectuer un retrait", withdrawal),
         "3": ("Effectuer un virement", transfer),
-        # "4": ("Historique des transactions", history),
+        "4": ("Historique des transactions", history),
         "0": ("Retour", None),
     }
     while True:
