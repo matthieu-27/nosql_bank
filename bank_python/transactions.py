@@ -137,7 +137,7 @@ def history():
     if not transactions:
         print("Aucune transaction trouvée.")
         return
-    print(f"\n{'ID':<8} {'Type':<12} {'Amount':>12}  {'Date':<18} Source    Receiver")
+    print(f"\n{'ID':<8} {'Type':<12} {'Montant':>12}  {'Date':<18} Source    Destinataire")
     print("-" * 75)
     for t in transactions:
         date_str = t["date"].strftime("%d/%m/%Y %H:%M") if isinstance(t.get("date"), datetime) else ""

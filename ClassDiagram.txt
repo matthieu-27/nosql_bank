@@ -26,7 +26,7 @@
                         | *
        +----------------------------------+
        |          <<abstract>>            |
-       |            Operation             |
+       |           Transaction            |
        +----------------------------------+
        | - id: String                     |
        | - amount: double                 |
