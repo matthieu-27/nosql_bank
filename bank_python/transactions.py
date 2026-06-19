@@ -140,7 +140,11 @@ def history():
     print(f"\n{'ID':<8} {'Type':<12} {'Amount':>12}  {'Date':<18} Source    Receiver")
     print("-" * 75)
     for t in transactions:
-        _print_transaction(t)
+        date_str = t["date"].strftime("%d/%m/%Y %H:%M") if isinstance(t.get("date"), datetime) else ""
+        line = f"{t['_id']:<8} {t.get('type',''):<12} {t.get('amount',0):>12,.2f}  {date_str:<18} {t.get('sourceAccountId',''):<10}"
+        if t.get("receiverAccountId"):
+            line += f" {t['receiverAccountId']}"
+        print(line)
 
 
 def menu():
