@@ -10,11 +10,11 @@ def _print_transaction(t):
     date_str = t["date"].strftime("%d/%m/%Y %H:%M") if isinstance(t.get("date"), datetime) else str(t.get("date", ""))
     print(f"  ID      : {t['_id']}")
     print(f"  Type    : {t.get('type', '')}")
-    print(f"  Amount  : {t.get('amount', 0):,.2f}")
+    print(f"  Montant  : {t.get('amount', 0):,.2f}")
     print(f"  Date    : {date_str}")
     print(f"  Source  : {t.get('sourceAccountId', '')}")
     if t.get("receiverAccountId"):
-        print(f"  Receiver: {t.get('receiverAccountId')}")
+        print(f"  Destinataire: {t.get('receiverAccountId')}")
 
 
 def deposit():
@@ -80,11 +80,54 @@ def withdrawal():
     print(f"  Nouveau solde : {account['balance'] - amount:,.2f}")
 
 
+def transfer():
+    print("\n** Effectuer un virement **")
+    src_id = input("ID du compte source       : ").strip()
+    dst_id = input("ID du compte destinataire : ").strip()
+    if src_id == dst_id:
+        print("Les comptes source et destinataire doivent être différents.")
+        return
+    src = get_db()["accounts"].find_one({"_id": src_id})
+    dst = get_db()["accounts"].find_one({"_id": dst_id})
+    if not src:
+        print("Compte source introuvable.")
+        return
+    if not dst:
+        print("Compte destinataire introuvable.")
+        return
+    try:
+        amount = float(input("Montant : ").strip())
+    except ValueError:
+        print("Montant invalide.")
+        return
+    if amount <= 0:
+        print("Le montant doit être positif.")
+        return
+    if src["balance"] < amount:
+        print(f"Solde insuffisant. Solde compte source : {src['balance']:,.2f}")
+        return
+    get_db()["accounts"].update_one({"_id": src_id}, {"$inc": {"balance": -amount}})
+    get_db()["accounts"].update_one({"_id": dst_id}, {"$inc": {"balance": amount}})
+    tid = next_id("transactions", "OPE")
+    transaction = {
+        "_id": tid,
+        "amount": amount,
+        "date": datetime.now(timezone.utc),
+        "sourceAccountId": src_id,
+        "receiverAccountId": dst_id,
+        "type": "Transfer",
+    }
+    _col().insert_one(transaction)
+    print("*** Virement effectué avec succès. ***")
+    _print_transaction(transaction)
+    print(f"  Nouveau solde (compte source) : {src['balance'] - amount:,.2f}")
+
+
 def menu():
     options = {
         "1": ("Effectuer un dépôt", deposit),
         "2": ("Effectuer un retrait", withdrawal),
-        # "3": ("Effectuer un virement", transfer),
+        "3": ("Effectuer un virement", transfer),
         # "4": ("Historique des transactions", history),
         "0": ("Retour", None),
     }
