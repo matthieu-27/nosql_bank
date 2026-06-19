@@ -47,10 +47,43 @@ def deposit():
     print(f"  Nouveau solde : {account['balance'] + amount:,.2f}")
 
 
+def withdrawal():
+    print("\n** Effectuer un retrait **")
+    account_id = input("ID du compte : ").strip()
+    account = get_db()["accounts"].find_one({"_id": account_id})
+    if not account:
+        print("Compte introuvable.")
+        return
+    try:
+        amount = float(input("Montant : ").strip())
+    except ValueError:
+        print("Montant invalide.")
+        return
+    if amount <= 0:
+        print("Le montant doit être positif.")
+        return
+    if account["balance"] < amount:
+        print(f"Solde insuffisant. Solde actuel : {account['balance']:,.2f}")
+        return
+    get_db()["accounts"].update_one({"_id": account_id}, {"$inc": {"balance": -amount}})
+    tid = next_id("transactions", "OPE")
+    transaction = {
+        "_id": tid,
+        "amount": amount,
+        "date": datetime.now(timezone.utc),
+        "sourceAccountId": account_id,
+        "type": "Withdrawal",
+    }
+    _col().insert_one(transaction)
+    print("*** Retrait effectué avec succès. ***")
+    _print_transaction(transaction)
+    print(f"  Nouveau solde : {account['balance'] - amount:,.2f}")
+
+
 def menu():
     options = {
         "1": ("Effectuer un dépôt", deposit),
-        # "2": ("Effectuer un retrait", withdrawal),
+        "2": ("Effectuer un retrait", withdrawal),
         # "3": ("Effectuer un virement", transfer),
         # "4": ("Historique des transactions", history),
         "0": ("Retour", None),
