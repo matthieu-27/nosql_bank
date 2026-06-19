@@ -1,5 +1,5 @@
-from datetime import datetime
-from database import get_db
+from datetime import datetime, timezone
+from database import get_db, next_id
 
 
 def _col():
@@ -17,22 +17,52 @@ def _print_transaction(t):
         print(f"  Receiver: {t.get('receiverAccountId')}")
 
 
-# def menu():
-#     options = {
-#         "1": ("Effectuer un dépôt", deposit),
-#         "2": ("Effectuer un retrait", withdrawal),
-#         "3": ("Effectuer un virement", transfer),
-#         "4": ("Historique des transactions", history),
-#         "0": ("Retour", None),
-#     }
-#     while True:
-#         print("\n*** Gestion des transactions ***")
-#         for k, (label, _) in options.items():
-#             print(f"  {k}. {label}")
-#         choix = input("Votre choix : ").strip()
-#         if choix == "0":
-#             break
-#         if choix in options and options[choix][1]:
-#             options[choix][1]()
-#         else:
-#             print("Choix invalide.")
+def deposit():
+    print("\n** Effectuer un dépôt **")
+    account_id = input("ID du compte : ").strip()
+    account = get_db()["accounts"].find_one({"_id": account_id})
+    if not account:
+        print("Compte introuvable.")
+        return
+    try:
+        amount = float(input("Montant : ").strip())
+    except ValueError:
+        print("Montant invalide.")
+        return
+    if amount <= 0:
+        print("Le montant doit être positif.")
+        return
+    get_db()["accounts"].update_one({"_id": account_id}, {"$inc": {"balance": amount}})
+    tid = next_id("transactions", "OPE")
+    transaction = {
+        "_id": tid,
+        "amount": amount,
+        "date": datetime.now(timezone.utc),
+        "sourceAccountId": account_id,
+        "type": "Deposit",
+    }
+    _col().insert_one(transaction)
+    print("*** Dépôt effectué avec succès. ***")
+    _print_transaction(transaction)
+    print(f"  New balance : {account['balance'] + amount:,.2f}")
+
+
+def menu():
+    options = {
+        "1": ("Effectuer un dépôt", deposit),
+        # "2": ("Effectuer un retrait", withdrawal),
+        # "3": ("Effectuer un virement", transfer),
+        # "4": ("Historique des transactions", history),
+        "0": ("Retour", None),
+    }
+    while True:
+        print("\n*** Gestion des transactions ***")
+        for k, (label, _) in options.items():
+            print(f"  {k}. {label}")
+        choix = input("Votre choix : ").strip()
+        if choix == "0":
+            break
+        if choix in options and options[choix][1]:
+            options[choix][1]()
+        else:
+            print("Choix invalide.")
