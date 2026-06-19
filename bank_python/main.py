@@ -1,6 +1,7 @@
 import sys
 import clients
 import account
+import transactions
 
 def main_menu():
     print("\n********************************")
@@ -31,6 +32,8 @@ def main():
             clients.menu()
         elif choice == "2":
             account.menu()
+        elif choice == "3":
+            transactions.menu()
         elif choice == "0":
             print("Au revoir !")
             break
